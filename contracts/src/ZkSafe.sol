@@ -4,7 +4,7 @@ pragma solidity =0.8.22;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract ZkSafe {
-    struct OperationInfo {
+    struct Operation {
         bytes32 multisig_id;
         uint256 amount;
         address token;
@@ -24,13 +24,13 @@ contract ZkSafe {
     }
 
 
-    function execute(OperationInfo memory operationInfo, bytes32[] calldata zkProof) external {
+    function execute(Operation memory operation, bytes32[] calldata zkProof) external {
         zkProof;
 
-        require(multisigs[operationInfo.multisig_id][operationInfo.token] >= operationInfo.amount, "ZkSafe: insufficient funds");
-        multisigs[operationInfo.multisig_id][operationInfo.token] -= operationInfo.amount;
-        require(IERC20(operationInfo.token).transfer(operationInfo.to, operationInfo.amount), "ZkSafe: transfer failed");
-        emit Execute(operationInfo.multisig_id, operationInfo.token, operationInfo.amount, operationInfo.to);
+        require(multisigs[operation.multisig_id][operation.token] >= operation.amount, "ZkSafe: insufficient funds");
+        multisigs[operation.multisig_id][operation.token] -= operation.amount;
+        require(IERC20(operation.token).transfer(operation.to, operation.amount), "ZkSafe: transfer failed");
+        emit Execute(operation.multisig_id, operation.token, operation.amount, operation.to);
     }
 
 }

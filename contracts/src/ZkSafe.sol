@@ -17,12 +17,8 @@ contract ZkSafe {
 
     function deposit(bytes32 multisigId, uint256 amount, address token) external payable {
         require(amount > 0, "ZkSafe: incorrect amount");
-        if (token == address(0)) {
-            require(msg.value == amount, "ZkSafe: incorrect amount");
-        }
-
+        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "ZkSafe: transfer failed");
         multisigs[multisigId][token] += amount;
-        // require(IERC20(token).transferFrom(msg.sender, address(this), amount), "ZkSafe: transfer failed");
         emit Deposit(multisigId, token, amount);
     }
 
@@ -32,11 +28,7 @@ contract ZkSafe {
 
         require(multisigs[operationInfo.multisig_id][operationInfo.token] >= operationInfo.amount, "ZkSafe: insufficient funds");
         multisigs[operationInfo.multisig_id][operationInfo.token] -= operationInfo.amount;
-        if (operationInfo.token == address(0)) {
-            payable(operationInfo.to).transfer(operationInfo.amount);
-        } else {
-            // require(IERC20(operationInfo.token).transfer(operationInfo.to, operationInfo.amount), "ZkSafe: transfer failed");
-        }
+        require(IERC20(operationInfo.token).transfer(operationInfo.to, operationInfo.amount), "ZkSafe: transfer failed");
     }
 
 }

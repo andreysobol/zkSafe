@@ -14,6 +14,7 @@ contract ZkSafe {
     mapping (bytes32 => mapping (address => uint256)) public multisigs; // multisigId => token => amount
 
     event Deposit(bytes32 indexed multisigId, address indexed token, uint256 amount);
+    event Execute(bytes32 indexed multisigId, address indexed token, uint256 amount, address indexed to);
 
     function deposit(bytes32 multisigId, uint256 amount, address token) external payable {
         require(amount > 0, "ZkSafe: incorrect amount");
@@ -29,6 +30,7 @@ contract ZkSafe {
         require(multisigs[operationInfo.multisig_id][operationInfo.token] >= operationInfo.amount, "ZkSafe: insufficient funds");
         multisigs[operationInfo.multisig_id][operationInfo.token] -= operationInfo.amount;
         require(IERC20(operationInfo.token).transfer(operationInfo.to, operationInfo.amount), "ZkSafe: transfer failed");
+        emit Execute(operationInfo.multisig_id, operationInfo.token, operationInfo.amount, operationInfo.to);
     }
 
 }

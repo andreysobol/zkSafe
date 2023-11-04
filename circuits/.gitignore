@@ -1,0 +1,6 @@
+node_modules
+src/*cpp/*
+src/*js*
+src/*r1cs
+src/*sym
+src/*wasm

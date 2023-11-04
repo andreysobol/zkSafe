@@ -2,6 +2,7 @@ pragma circom 2.0.0;
 
 include "../node_modules/circomlib/circuits/eddsa.circom";
 include "../node_modules/circomlib/circuits/pedersen.circom";
+include "../node_modules/circomlib/circuits/bitify.circom";
 
 template SingleMultisig(ms, max_m) {
 
@@ -115,7 +116,29 @@ template SingleMultisig(ms, max_m) {
     }
 }
 
-template AggregatedMultisig(ms, max_m, max_amount) {
+template packMessageToBits(ms, max_amount, serealized_message_size, bits_per_field) {
+    // message
+    signal input msg[max_amount][serealized_message_size];
+
+    // message bits
+    signal output msg_bits[max_amount][ms];
+
+    component num2Bits[max_amount][serealized_message_size];
+
+    for (var a=0; a<max_amount; a++) {
+        for (var s=0; s<serealized_message_size; s++) {
+            num2Bits[a][s] = Num2Bits(bits_per_field);
+            num2Bits[a][s].in <== msg[a][s];
+            for (var i=0; i<bits_per_field; i++) {
+                if (s*bits_per_field + i < ms) {
+                    num2Bits[a][s].out[i] ==> msg_bits[a][s*bits_per_field + i];
+                }
+            }
+        }
+    }
+}
+
+template AggregatedMultisig(ms, max_m, max_amount, serealized_message_size, bits_per_field) {
 
     // number 
     signal input n[max_amount];
@@ -125,7 +148,7 @@ template AggregatedMultisig(ms, max_m, max_amount) {
     signal input valid_signature[max_amount][max_m];
 
     // message
-    signal input msg[max_amount][ms];
+    signal input msg[max_amount][serealized_message_size];
 
     // public key
     signal input A[max_amount][max_m][256];
@@ -139,6 +162,12 @@ template AggregatedMultisig(ms, max_m, max_amount) {
 
     signal input amount_to_prove;
 
+    signal msg_bits[max_amount][ms];
+
+    component pack = packMessageToBits(ms, max_amount, serealized_message_size, bits_per_field);
+    msg ==> pack.msg;
+    msg_bits <== pack.msg_bits;
+
     component multisig[max_amount];
 
     for(var a=0; a<max_amount; a++) {
@@ -151,7 +180,7 @@ template AggregatedMultisig(ms, max_m, max_amount) {
         multisig[a].public_key_hash[1] <-- amount_to_prove > a ? public_key_hash[a][1] : public_key_hash[0][1];
 
         for (var i=0; i<ms; i++) {
-            multisig[a].msg[i] <-- amount_to_prove > 0 ? msg[a][i] : msg[0][i];
+            multisig[a].msg[i] <-- amount_to_prove > 0 ? msg_bits[a][i] : msg_bits[0][i];
         }
 
         for (var i=0; i<max_m; i++) {
@@ -166,4 +195,4 @@ template AggregatedMultisig(ms, max_m, max_amount) {
     }
 }
 
-component main = AggregatedMultisig(255*3, 5, 5);
+component main {public [public_key_hash, msg]} = AggregatedMultisig(576, 5, 20, 3, 253);

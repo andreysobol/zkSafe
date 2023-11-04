@@ -13,7 +13,7 @@ contract MockERC20 is ERC20 {
     }
 }
 
-contract CounterTest is Test {
+contract ZkSafeTest is Test {
     ZkSafe public zkSafe;
     MockERC20 public token;
 
@@ -34,17 +34,20 @@ contract CounterTest is Test {
     }
 
     function testDeposit() public {
-        uint256 depositAmount = 1e18; // 1 token, assuming 18 decimals
+        uint256 depositAmount = 1e18;
         zkSafe.deposit(TEST_MULTISIG_ID, depositAmount, address(token));
 
         assertEq(zkSafe.multisigs(TEST_MULTISIG_ID, address(token)), depositAmount);
         assertTokenBalance(address(token), address(zkSafe), depositAmount);
-        assertTokenBalance(address(token), address(this), initialBalance - depositAmount); // Check if tokens are deducted
+        assertTokenBalance(address(token), address(this), initialBalance - depositAmount);
     }
 
     function testExecute() public {
-        uint256 depositAmount = 1e18; // 1 token, assuming 18 decimals
-        uint256 executeAmount = 1e18; // 1 token, assuming 18 decimals
+        uint256 depositAmount = 1e18;
+        uint256 executeAmount = 1e18;
+
+        ZkSafe.Operation[] memory operations = new ZkSafe.Operation[](1);
+        bytes32[] memory dummyProofs = new bytes32[](1);
 
         zkSafe.deposit(TEST_MULTISIG_ID, depositAmount, address(token));
 
@@ -52,14 +55,96 @@ contract CounterTest is Test {
             multisig_id: TEST_MULTISIG_ID,
             amount: executeAmount,
             token: address(token),
-            to: address(this) // Send tokens back to the test address
+            to: address(this)
         });
 
-        bytes32[] memory dummyProof = new bytes32[](1);
+        operations[0] = operation;
+        dummyProofs[0] = bytes32(0);
 
-        zkSafe.execute(operation, dummyProof);
+        uint256 gasBefore = gasleft();
+        zkSafe.execute(operations, dummyProofs);
+        uint256 gasAfter = gasleft();
+        uint256 gasUsed = gasBefore - gasAfter;
+
 
         assertEq(zkSafe.multisigs(TEST_MULTISIG_ID, address(token)), 0);
-        assertTokenBalance(address(token), address(this), initialBalance); // Test address should have all the tokens back
+        assertTokenBalance(address(token), address(this), initialBalance);
+
+        console2.log("Gas used for 1 transfer operation:", gasUsed);
+    }
+
+    function testExecuteMultipleAmount() public {
+        uint256 amount = 50;
+        uint256 depositAmount = 1e18;
+        zkSafe.deposit(TEST_MULTISIG_ID, amount * depositAmount, address(token));
+
+        ZkSafe.Operation[] memory operations = new ZkSafe.Operation[](amount);
+        bytes32[] memory dummyProofs = new bytes32[](amount);
+
+        for (uint256 i = 0; i < amount; i++) {
+            ZkSafe.Operation memory operation = ZkSafe.Operation({
+                multisig_id: TEST_MULTISIG_ID,
+                amount: depositAmount,
+                token: address(token),
+                to: address(this)
+            });
+
+            operations[i] = operation;
+            dummyProofs[i] = bytes32(0);
+        }
+
+        uint256 gasBefore = gasleft();
+        zkSafe.execute(operations, dummyProofs);
+        uint256 gasAfter = gasleft();
+        uint256 gasUsed = gasBefore - gasAfter;
+
+        console2.log("Gas used for", amount, "transfer operations:", gasUsed);
+    }
+
+    function testExecuteMultipleAmounts2() public {
+        uint256 maxOperations = 50;
+        uint256 depositAmount = 1e18;
+
+        for (uint256 amount = 1; amount <= maxOperations; amount++) {
+            zkSafe.deposit(TEST_MULTISIG_ID, amount * depositAmount, address(token));
+
+            ZkSafe.Operation[] memory operations = new ZkSafe.Operation[](amount);
+            bytes32[] memory dummyProofs = new bytes32[](amount);
+
+            for (uint256 i = 0; i < amount; i++) {
+                operations[i] = ZkSafe.Operation({
+                    multisig_id: TEST_MULTISIG_ID,
+                    amount: depositAmount,
+                    token: address(token),
+                    to: address(this)
+                });
+                dummyProofs[i] = bytes32(0);
+            }
+
+            uint256 gasBefore = gasleft();
+            zkSafe.execute(operations, dummyProofs);
+            uint256 gasAfter = gasleft();
+            uint256 gasUsed = gasBefore - gasAfter;
+
+            console2.log("Gas used for", amount, "transfer operations:", gasUsed);
+        }
+    }
+
+
+
+    function testErc20Transfer() public {
+        uint256 transferAmount = 1e18;
+        token.transfer(address(zkSafe), transferAmount);
+
+        assertTokenBalance(address(token), address(zkSafe), transferAmount);
+        assertTokenBalance(address(token), address(this), initialBalance - transferAmount);
+    }
+
+    function testErc20TransferFullBalance() public {
+        uint256 transferAmount = initialBalance;
+        token.transfer(address(zkSafe), transferAmount);
+
+        assertTokenBalance(address(token), address(zkSafe), transferAmount);
+        assertTokenBalance(address(token), address(this), 0);
     }
 }

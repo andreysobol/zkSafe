@@ -24,13 +24,15 @@ contract ZkSafe {
     }
 
 
-    function execute(Operation memory operation, bytes32[] calldata zkProof) external {
-        zkProof;
-
-        require(multisigs[operation.multisig_id][operation.token] >= operation.amount, "ZkSafe: insufficient funds");
-        multisigs[operation.multisig_id][operation.token] -= operation.amount;
-        require(IERC20(operation.token).transfer(operation.to, operation.amount), "ZkSafe: transfer failed");
-        emit Execute(operation.multisig_id, operation.token, operation.amount, operation.to);
+    function execute(Operation[] memory operations, bytes32[] calldata zkProof) external {
+        require(operations.length == zkProof.length, "ZkSafe: incorrect proof length");
+        uint256 length = operations.length;
+        for (uint i = 0; i < length; i++) {
+            Operation memory op = operations[i];
+            require(multisigs[op.multisig_id][op.token] >= op.amount, "ZkSafe: insufficient funds");
+            multisigs[op.multisig_id][op.token] -= op.amount;
+            require(IERC20(op.token).transfer(op.to, op.amount), "ZkSafe: transfer failed");
+            emit Execute(op.multisig_id, op.token, op.amount, op.to);
+        }
     }
-
 }

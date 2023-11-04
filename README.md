@@ -1,5 +1,7 @@
 # zkSafe
 
+## Aggregated Zero Knowledge Multisig on EVM blockchains
+
 ![alt text](gas_usage/graph.png)
 
 ```

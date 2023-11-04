@@ -27,6 +27,7 @@ contract ZkSafeTest is Test {
 
         token.mint(address(this), initialBalance);
         token.approve(address(zkSafe), initialBalance);
+        console2.log("token address:", address(token));
     }
 
     function assertTokenBalance(address tokenAddress, address holder, uint256 expectedBalance) internal {
@@ -130,8 +131,6 @@ contract ZkSafeTest is Test {
         }
     }
 
-
-
     function testErc20Transfer() public {
         uint256 transferAmount = 1e18;
         token.transfer(address(zkSafe), transferAmount);
@@ -146,5 +145,20 @@ contract ZkSafeTest is Test {
 
         assertTokenBalance(address(token), address(zkSafe), transferAmount);
         assertTokenBalance(address(token), address(this), 0);
+    }
+
+    function testPackOperation() public {
+        ZkSafe.Operation memory operation = ZkSafe.Operation({
+            multisig_id: TEST_MULTISIG_ID,
+            amount: 1e18,
+            token: address(token),
+            to: address(this)
+        });
+
+        uint256[3] memory packed = zkSafe.packOperation(operation);
+
+        // assertEq(packed[0], 1e18);
+        // assertEq(packed[1], uint256(uint160(address(token))) << 96);
+        // assertEq(packed[2], uint256(uint160(address(this))) << 96);
     }
 }

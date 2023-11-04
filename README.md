@@ -18,10 +18,36 @@ deposit(bytes32 multisig_id, uint256 amount, address token) - no zk
 execute(RecivedInfo[] calldata recivedInfo, bytes32[] calldata zkProof) - with zk
 ```
 
+# Build circuit
+
+Build circom:
+
+```
+cd /tmp
+git clone https://github.com/iden3/circom.git
+cargo build --release
+cargo install --path circom
+```
+
+Install dependencies for circuit:
+
+
+```
+cd circuits
+npm install
+```
+
+Build circuit:
+
+```
+circom multisig.circom --r1cs --wasm --sym --c
+```
+
 # Trusted setup
 
 ```
 cd prover
+npm install
 ```
 
 First, we start a new "powers of tau" trusted setup ceremony, size: 2**20

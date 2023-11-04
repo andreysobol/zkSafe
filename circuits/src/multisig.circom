@@ -115,48 +115,55 @@ template SingleMultisig(ms, max_m) {
     }
 }
 
-template AggregatedMultisig(ms, max_m, amount) {
+template AggregatedMultisig(ms, max_m, max_amount) {
 
     // number 
-    signal input n[amount];
-    signal input m[amount];
+    signal input n[max_amount];
+    signal input m[max_amount];
 
     // signers
-    signal input valid_signature[amount][max_m];
+    signal input valid_signature[max_amount][max_m];
 
     // message
-    signal input msg[amount][ms];
+    signal input msg[max_amount][ms];
 
     // public key
-    signal input A[amount][max_m][256];
+    signal input A[max_amount][max_m][256];
 
     // aggregated public key
-    signal input public_key_hash[amount][2];
+    signal input public_key_hash[max_amount][2];
 
     // signature
-    signal input R8[amount][max_m][256];
-    signal input S[amount][max_m][256];
+    signal input R8[max_amount][max_m][256];
+    signal input S[max_amount][max_m][256];
 
-    component multisig[amount];
+    signal input amount_to_prove;
 
-    for(var a=0; a<amount; a++) {
+    component multisig[max_amount];
+
+    for(var a=0; a<max_amount; a++) {
         multisig[a] = SingleMultisig(ms, max_m);
 
-        multisig[a].n <== n[a];
-        multisig[a].m <== m[a];
+        multisig[a].n <-- amount_to_prove > 0 ? n[a] : n[0];
+        multisig[a].m <-- amount_to_prove > 0 ? m[a] : m[0];
 
-        multisig[a].public_key_hash[0] <== public_key_hash[a][0];
-        multisig[a].public_key_hash[1] <== public_key_hash[a][1];
+        multisig[a].public_key_hash[0] <-- amount_to_prove > a ? public_key_hash[a][0] : public_key_hash[0][0];
+        multisig[a].public_key_hash[1] <-- amount_to_prove > a ? public_key_hash[a][1] : public_key_hash[0][1];
 
-        multisig[a].msg <== msg[a];
+        for (var i=0; i<ms; i++) {
+            multisig[a].msg[i] <-- amount_to_prove > 0 ? msg[a][i] : msg[0][i];
+        }
 
         for (var i=0; i<max_m; i++) {
-            multisig[a].valid_signature[i] <== valid_signature[a][i];
-            multisig[a].A[i] <== A[a][i];
-            multisig[a].R8[i] <== R8[a][i];
-            multisig[a].S[i] <== S[a][i];
+            multisig[a].valid_signature[i] <-- amount_to_prove > a ? valid_signature[a][i] : valid_signature[0][i]; 
+
+            for (var j=0; j<256; j++) {
+                multisig[a].A[i][j] <-- amount_to_prove > a ? A[a][i][j] : A[0][i][j];
+                multisig[a].R8[i][j] <-- amount_to_prove > a ? R8[a][i][j] : R8[0][i][j];
+                multisig[a].S[i][j] <-- amount_to_prove > a ? S[a][i][j] : S[0][i][j];
+            }
         }
     }
 }
 
-component main = AggregatedMultisig(80, 5, 25);
+component main = AggregatedMultisig(255*3, 5, 5);

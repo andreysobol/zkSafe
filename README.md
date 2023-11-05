@@ -95,5 +95,5 @@ snarkjs powersoftau prepare phase2 pot20_0001.ptau pot20_final.ptau -v
 Export verification key
 
 ```
-snarkjs groth16 setup ../circuits/src/multisig.r1cs pot12_final.ptau multisig.zkey
+snarkjs groth16 setup ../circuits/src/multisig.r1cs pot20_final.ptau multisig.zkey
 ```

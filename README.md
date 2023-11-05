@@ -230,3 +230,13 @@ node wallet/sign.js
 By running this script, users can simulate the signing of transactions, verifying signatures, and preparing inputs for zk-SNARK proofs. The script also writes the necessary data to an `index.json` file, which contains all the information needed for the circuit to prove a valid multisig transaction.
 
 The wallet directory contains the necessary tools for secure transaction signing and key management in a privacy-preserving manner, both of which are integral to the operation of ZkSafe.
+
+# Proof Generation
+
+After preparing witness using wallet
+
+```
+cd prover
+
+snarkjs groth16 prove multisig.zkey witness.wtns proof.json index.json
+```

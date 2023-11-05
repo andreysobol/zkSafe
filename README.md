@@ -242,3 +242,7 @@ cd prover
 
 snarkjs groth16 prove multisig.zkey witness.wtns proof.json index.json
 ```
+
+# Demo
+
+Short [demo](https://www.loom.com/share/bbb2d8c2dea04931b35b733f35ecdbb2?sid=e4c0281c-c029-4ac8-9227-6494fcc69603)

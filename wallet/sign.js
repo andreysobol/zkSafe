@@ -1,6 +1,7 @@
 const fs = require('fs');
 const fsp = require('fs').promises;
 const buildEddsa = require("circomlibjs").buildEddsa;
+const buildPedersenHash = require("circomlibjs").buildPedersenHash;
 
 async function importKeysFromJsonAsync(filePath) {
   try {
@@ -71,27 +72,54 @@ function combineAndConvertToHex(packed) {
   return hexValue;
 }
 
+function replacer(key, value) {
+  if (typeof value === 'bigint') {
+    return value.toString();
+  } else {
+    return value;
+  }
+}
 
 async function sign() {
   // multisig n/m
   const n = 3;
-  const m = 5;
+  const max_m = 5;
+  const max_amount = 20;
 
   const amount = 10 ** 18;
-  const token = BigInt('0x2e234DAe75C793f67A35089C9d99245E1C58470b');
+  const token = BigInt('0xdac17f958d2ee523a2206206994597c13d831ec7');
   const to = BigInt('0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496');
 
   const packed = packOperation(amount, token, to);
   const hex = combineAndConvertToHex(packed);
 
-  let signatures = [];
   const eddsa = await buildEddsa();
-  console.log(hex);
+  // const pedersen = await buildPedersenHash();
+  // const b = Buffer.alloc(32);
+
+  // const h = pedersen.hash(b);
+  // const hP = babyJub.unpackPoint(h);
+
+
+  let n_array = new Array(max_amount).fill(0);
+  let m_array = new Array(max_amount).fill(0);
+  n_array[0] = n;
+  m_array[0] = max_m;
+
+  let valid_signature = new Array(max_amount).fill(null).map((_, index) =>
+        index === 0 ? [1, 1, 1, 0, 0] : new Array(max_m).fill(0)
+    );
+
+  let msg_array = new Array(max_amount).fill(null).map((_, index) =>
+    index === 0 ? packed : new Array(packed.length).fill(0)
+  );
+
+  let signatures = [];
   const msg = Buffer.from(hex, "hex");
   const keysFilePath = 'keys.json';
   const keys = await importKeysFromJsonAsync(keysFilePath);
 
-  for (let i = 0; i < m; i++) {
+  for (let i = 0; i < max_m; i++) {
     const privateKey = keys[i].privateKey;
     const publicKey = keys[i].publicKey;
     const packedPublicKey = keys[i].packedPublicKey;
@@ -119,9 +147,14 @@ async function sign() {
     });
   }
 
-  // fs.writeFileSync('signatures.json', JSON.stringify(signatures, null, 2), 'utf-8');
-  console.log("Signatures:", signatures);
-  console.log(`${n}/${m} signatures have been generated and saved to signatures.json`);
+  const circuitInputs = {
+    n: n_array,
+    m: m_array,
+    valid_signature: valid_signature,
+    msg: msg_array
+  };
+
+  await fsp.writeFile('index.json', JSON.stringify(circuitInputs, replacer, 2));
 }
 
 sign()

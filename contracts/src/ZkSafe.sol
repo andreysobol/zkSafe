@@ -26,7 +26,19 @@ contract ZkSafe {
 
 
     function execute(Operation[] memory operations, bytes32[] calldata zkProof) external {
-        require(operations.length == zkProof.length, "ZkSafe: incorrect proof length");
+
+        uint256[operations.length*3] memory public_inputs;
+
+        for (uint i = 0; i < operations.length; i++) {
+            Operation memory op = operations[i];
+            uint256[3] memory packed = packOperation(op);
+            public_inputs[i*3] = packed[0];
+            public_inputs[i*3+1] = packed[1];
+            public_inputs[i*3+2] = packed[2];
+        }
+
+        // TODO: verify zkProof here
+
         uint256 length = operations.length;
         for (uint i = 0; i < length; i++) {
             Operation memory op = operations[i];

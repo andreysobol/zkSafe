@@ -4,7 +4,7 @@
 
 Using multisig in EVM blockchains, there is a trade-off between security (the number of signatures) and gas cost. The more signatures, the more expensive the transactions. If we introduce waiting time into this equation, there will be a trilemma - time, the number of signatures, and gas usage.
 
-Thanks to the use of ZK technologies, it is possible to create batches of multisig transfers with a low transaction cost and a high number of signatures (and thus a higher level of security). However, we will sacrifice waiting time.
+Thanks to the use of ZK technologies, it is possible to create batches of multisig transfers with a low transaction cost and a high number of signatures (with higher level of security). However, we will sacrifice waiting time.
 
 # Gas efficiency
 

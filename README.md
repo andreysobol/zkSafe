@@ -182,7 +182,7 @@ Usage
 ```
 node wallet/generateKeys.js [amount]
 ```
-[amount] is an optional parameter that determines the number of key pairs to generate
+`amount` is an optional parameter that determines the number of key pairs to generate
 
 
 ### Transaction Signing
@@ -191,6 +191,12 @@ The sign.js script in the wallet folder mimics the signing process of a multisig
 
 **Script Path**: `wallet/sign.js`
 
-By running this script, users can simulate the signing of transactions, verifying signatures, and preparing inputs for zk-SNARK proofs. The script also writes the necessary data to an index.json file, which contains all the information needed for the circuit to prove a valid multisig transaction.
+Usage
+
+```
+node wallet/sign.js
+```
+
+By running this script, users can simulate the signing of transactions, verifying signatures, and preparing inputs for zk-SNARK proofs. The script also writes the necessary data to an `index.json` file, which contains all the information needed for the circuit to prove a valid multisig transaction.
 
 The wallet directory contains the necessary tools for secure transaction signing and key management in a privacy-preserving manner, both of which are integral to the operation of ZkSafe.

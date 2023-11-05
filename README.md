@@ -236,6 +236,8 @@ The wallet directory contains the necessary tools for secure transaction signing
 After preparing witness using wallet
 
 ```
+node generate_witness.js multisig.wasm input.json witness.wtns
+
 cd prover
 
 snarkjs groth16 prove multisig.zkey witness.wtns proof.json index.json

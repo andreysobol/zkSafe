@@ -132,28 +132,28 @@ To get started with ZkSafe, follow these steps:
 ### Installation
 This will install the necessary dependencies including Foundry for contract compilation and testing
 
-```
+```shell
 make install
 ```
 
 ### Building
 Compile the contract with the following command
-```
+```shell
 make build
 ```
 
 ### Testing
 Before deploying, run the tests to ensure everything is functioning as expected. Testing the contract not only ensures correctness but also allows for the evaluation of gas consumption for various ERC20 transfer approaches. It is recommended to run comprehensive tests to validate the contract's behavior and performance. Keep in mind it's necessary to have generated `Groth16Verifier` contract
 
-```
+```shell
 make test
 ```
 
 ### Deployment
 Make sure to set your `RPC_URL` and `PRIVATE_KEY` in an .env file before deployment.
-`
+
 Deploy ZkSafe using
-```
+```shell
 make deploy
 ```
 
@@ -171,6 +171,16 @@ The wallet's functionality is encapsulated in two main scripts within the `walle
 - `generateKeys.js`: For key pair generation.
 - `sign.js`: For signing transactions.
 
+To interact with the off-chain wallet for generating transactions and multisig signatures, you need to ensure that all dependencies are installed.
+
+Navigate to the `wallet` directory and run one of the following commands, depending on your package manager of choice:
+
+Using npm:
+```shell
+cd wallet
+npm install
+```
+
 ### Key Generation
 
 Located in the `wallet` folder, the `generateKeys.js` script is used to generate private and public key pairs for the multisig wallet. These keys are essential for creating a secure and functional multisig wallet within the `ZkSafe` ecosystem.
@@ -179,7 +189,7 @@ Located in the `wallet` folder, the `generateKeys.js` script is used to generate
 
 Usage
 
-```
+```shell
 node wallet/generateKeys.js [amount]
 ```
 `amount` is an optional parameter that determines the number of key pairs to generate
@@ -193,7 +203,7 @@ The sign.js script in the wallet folder mimics the signing process of a multisig
 
 Usage
 
-```
+```shell
 node wallet/sign.js
 ```
 

@@ -42,6 +42,18 @@ Operator can't steal money, because he can't create valid signature without priv
 - [Foundry](https://github.com/foundry-rs/foundry) - EVM testing framework
 - [OpenZeppelin](contracts/lib/openzeppelin-contracts) - ERC20 token
 
+# GPT-3 joke
+
+prompt: 
+
+*ChatGPT please write funny joke about Aggregated Zero Knowledge Multisig on EVM blockchains*
+
+response:
+
+*Why did the Aggregated Zero Knowledge Multisig contract become a stand-up comedian on the EVM blockchain?*
+
+*Because it realized that even in the world of decentralized finance, a good laugh is the best way to cope with those gas fees that just keep multiplying! 😄💸*
+
 # Build circuit
 
 Build circom:

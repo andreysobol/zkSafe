@@ -26,6 +26,22 @@ Operator combine signatures from different users and generate zk proof. Operator
 
 Operator can't steal money, because he can't create valid signature without private keys of participants. So protocol is secure and totally trustless.
 
+# Technologies
+
+## Zero knowledge
+
+- [Circom](https://github.com/iden3/circom) - zk circuit language
+- [Circomlib](https://github.com/iden3/circomlib) - zk circuits library
+- [Pedersen hash](https://github.com/iden3/circomlib/blob/master/circuits/pedersen.circom) - hash function
+- [EDDSA](https://github.com/iden3/circomlib/blob/master/circuits/eddsa.circom) - signature scheme
+- [Groth16](https://eprint.iacr.org/2016/260.pdf) - zk proof system
+- [SnarkJS](https://github.com/iden3/snarkjs) - zk proof system implementation
+
+## Contracts
+
+- [https://github.com/foundry-rs/foundry] - EVM testing framework
+- [OpenZeppelin](contracts/lib/openzeppelin-contracts) - ERC20 token
+
 ```
 multisig_id - of
 n: The total number of required signatures to approve a transaction.

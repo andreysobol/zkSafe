@@ -1,0 +1,1 @@
+Please execute command from main [README.md](/README.md)

@@ -2,7 +2,29 @@
 
 ## Aggregated Zero Knowledge Multisig on EVM blockchains
 
+Using multisig in EVM blockchains, there is a trade-off between security (the number of signatures) and gas cost. The more signatures, the more expensive the transactions. If we introduce waiting time into this equation, there will be a trilemma - time, the number of signatures, and gas usage.
+
+Thanks to the use of ZK technologies, it is possible to create batches of multisig transactions with a low transaction cost and a high number of signatures (and thus a higher level of security). However, we will sacrifice waiting time.
+
+# Gas efficiency
+
+On a batch of 50 transactions our zkSafe contract will be 2.5 times cheaper than single signature EOA ERC20 transfer. Compared to the Gnosis Safe, our contract will be 5 times cheaper.
+
+Using batch of 6 transactions our zkSafe contract become more efficient than Gnosis Safe. Using batch of 14 transactions our zkSafe contract become more efficient than EOA ERC20 transfer.
+
 ![alt text](gas_usage/graph.png)
+
+Data [source](/gas_usage/gas_usage.py) for this calculations and graph
+
+# UX flow
+
+User can deposit money to our contract using `deposit` method. He provide `multisig_id` - pedersen hash of `n`, `m` and `public_keys`. `m` - size of all participants, `n` - number of signatures required to execute transaction.
+
+When user want to make a transaction, he sign `operation` message. `operation` message contain `amount`, `token` and `to` address. User send aggregated signature to operator.
+
+Operator combine signatures from different users and generate zk proof. Operator send proof to contract calling method `execute`.
+
+Operator can't steal money, because he can't create valid signature without private keys of participants. So protocol is secure and totally trustless.
 
 ```
 multisig_id - of

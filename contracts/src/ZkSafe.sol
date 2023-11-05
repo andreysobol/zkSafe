@@ -4,7 +4,7 @@ pragma solidity =0.8.22;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "forge-std/console2.sol";
 
-contract ZkSafe {
+contract ZkSafe is Groth16Verifier{
     struct Operation {
         bytes32 multisig_id;
         uint256 amount;
@@ -25,19 +25,27 @@ contract ZkSafe {
     }
 
 
-    function execute(Operation[] memory operations, bytes32[] calldata zkProof) external {
+    function execute(
+        uint[2] calldata pA,
+        uint[2][2] calldata pB,
+        uint[2] calldata pC,
+        Operation[] memory operations,
+    ) external {
 
         uint256[operations.length*3] memory public_inputs;
 
         for (uint i = 0; i < operations.length; i++) {
             Operation memory op = operations[i];
             uint256[3] memory packed = packOperation(op);
-            public_inputs[i*3] = packed[0];
-            public_inputs[i*3+1] = packed[1];
-            public_inputs[i*3+2] = packed[2];
+            public_inputs[i*4] = multisig_id;
+            public_inputs[i*4+1] = packed[0];
+            public_inputs[i*4+2] = packed[1];
+            public_inputs[i*4+3] = packed[2];
         }
 
-        // TODO: verify zkProof here
+        // verify zkProof
+
+        varifyProof(pA, pB, pC, public_inputs);
 
         uint256 length = operations.length;
         for (uint i = 0; i < length; i++) {

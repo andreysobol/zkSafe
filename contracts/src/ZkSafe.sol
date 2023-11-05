@@ -47,7 +47,7 @@ contract ZkSafe is Groth16Verifier {
 
         // verify zkProof
 
-        varifyProof(pA, pB, pC, public_inputs);
+        require(varifyProof(pA, pB, pC, public_inputs), "ZkSafe: invalid proof");
 
         uint256 length = operations.length;
         for (uint i = 0; i < length; i++) {

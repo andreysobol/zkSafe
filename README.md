@@ -39,7 +39,7 @@ Operator can't steal money, because he can't create valid signature without priv
 
 ## Contracts
 
-- [Foundry][https://github.com/foundry-rs/foundry] - EVM testing framework
+- [Foundry](https://github.com/foundry-rs/foundry) - EVM testing framework
 - [OpenZeppelin](contracts/lib/openzeppelin-contracts) - ERC20 token
 
 ```

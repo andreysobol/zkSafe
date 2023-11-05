@@ -81,11 +81,12 @@ function replacer(key, value) {
 }
 
 async function sign() {
-  // multisig n/m
+  // multisig n/max_m
   const n = 3;
   const max_m = 5;
   const max_amount = 20;
 
+  // TODO: get these from the user
   const amount = 10 ** 18;
   const token = BigInt('0xdac17f958d2ee523a2206206994597c13d831ec7');
   const to = BigInt('0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496');

@@ -156,9 +156,5 @@ contract ZkSafeTest is Test {
         });
 
         uint256[3] memory packed = zkSafe.packOperation(operation);
-
-        // assertEq(packed[0], 1e18);
-        // assertEq(packed[1], uint256(uint160(address(token))) << 96);
-        // assertEq(packed[2], uint256(uint160(address(this))) << 96);
     }
 }

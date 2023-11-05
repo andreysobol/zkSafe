@@ -4,7 +4,7 @@ const buildEddsa = require("circomlibjs").buildEddsa;
 const buildBabyjub = require("circomlibjs").buildBabyjub;
 
 
-async function generateKeypair() {
+async function generateKeys() {
   let eddsa;
   let babyJub;
   let keys = [];
@@ -41,7 +41,7 @@ function uint8ArrayToHex(input) {
 
 const amount = process.argv[2] ? parseInt(process.argv[2], 10) : 1;
 
-generateKeypair(amount)
+generateKeys(amount)
   .then(() => process.exit(0))
   .catch(err => {
     console.error(err);

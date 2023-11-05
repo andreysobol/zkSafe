@@ -44,7 +44,7 @@ Operator can't steal money, because he can't create valid signature without priv
 
 # GPT-3 joke
 
-prompt: 
+prompt:
 
 *ChatGPT please write funny joke about Aggregated Zero Knowledge Multisig on EVM blockchains*
 
@@ -115,3 +115,82 @@ Generate solidity verifier
 ```
 snarkjs zkey export solidityverifier multisig.zkey ../contracts/src/Verifier.sol
 ```
+
+
+# ZkSafe Smart Contract
+
+`ZkSafe` is a smart contract designed for Ethereum that enhances ERC20 transfer optimization through zero-knowledge proofs. This contract facilitates the management of multisig wallets, enabling operations to be conducted.
+
+- **Deposit Funds**: Users can deposit ERC20 tokens into multisig wallets, using a unique `multisig_id` for identification.
+- **Execute Transactions with zkProofs**: The contract allows the execution of batch of transfers, contingent upon the provision of valid zero-knowledge proofs
+- **Pack Operation Data**: It includes a utility to pack transaction data into a consistent format, necessary for zero-knowledge proof generation.
+
+`Groth16Verifier` is an integral part of the ZkSafe system, responsible for the verification of zero-knowledge proofs. It is generated after a trusted setup phase, which is a one-off event that produces the necessary cryptographic parameters for generating and verifying proofs. The verifier ensures that ZkSafe can validate transactions without disclosure of the actual data, maintaining the privacy of the participants.
+
+To get started with ZkSafe, follow these steps:
+
+### Installation
+This will install the necessary dependencies including Foundry for contract compilation and testing
+
+```
+make install
+```
+
+### Building
+Compile the contract with the following command
+```
+make build
+```
+
+### Testing
+Before deploying, run the tests to ensure everything is functioning as expected. Testing the contract not only ensures correctness but also allows for the evaluation of gas consumption for various ERC20 transfer approaches. It is recommended to run comprehensive tests to validate the contract's behavior and performance. Keep in mind it's necessary to have generated `Groth16Verifier` contract
+
+```
+make test
+```
+
+### Deployment
+Make sure to set your `RPC_URL` and `PRIVATE_KEY` in an .env file before deployment.
+`
+Deploy ZkSafe using
+```
+make deploy
+```
+
+
+We encourage contributions to the project. When contributing, please write tests for new functionalities and ensure they pass before creating a pull request.
+
+
+# Off-chain Wallet
+
+The `ZkSafe` project includes an off-chain wallet component located in the `wallet` folder. This component is instrumental for securely generating transactions with transfers and signing them with a multisig scheme. The off-chain wallet also serves as the witness generator for the Circom circuit, which is vital for enabling the zero-knowledge proof feature of `ZkSafe`.
+
+The wallet's functionality is encapsulated in two main scripts within the `wallet` folder:
+
+
+- `generateKeys.js`: For key pair generation.
+- `sign.js`: For signing transactions.
+
+### Key Generation
+
+Located in the `wallet` folder, the `generateKeys.js` script is used to generate private and public key pairs for the multisig wallet. These keys are essential for creating a secure and functional multisig wallet within the `ZkSafe` ecosystem.
+
+**Script Path**: `wallet/generateKeys.js`
+
+Usage
+
+```
+node wallet/generateKeys.js [amount]
+```
+[amount] is an optional parameter that determines the number of key pairs to generate
+
+
+### Transaction Signing
+
+The sign.js script in the wallet folder mimics the signing process of a multisig wallet, packing transaction details into the expected format for the zk-SNARKs circuit and signing the transaction accordingly.
+
+**Script Path**: `wallet/sign.js`
+
+By running this script, users can simulate the signing of transactions, verifying signatures, and preparing inputs for zk-SNARK proofs. The script also writes the necessary data to an index.json file, which contains all the information needed for the circuit to prove a valid multisig transaction.
+
+The wallet directory contains the necessary tools for secure transaction signing and key management in a privacy-preserving manner, both of which are integral to the operation of ZkSafe.

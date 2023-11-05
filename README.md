@@ -54,7 +54,27 @@ response:
 
 *Because it realized that even in the world of decentralized finance, a good laugh is the best way to cope with those gas fees that just keep multiplying! 😄💸*
 
-# Build circuit
+# Circuit
+
+## SingleMultisig Template:
+
+This is a template that defines the logic for a single multi-signature. It takes several inputs such as n and m (presumably the number and threshold of signatures required), valid_signature (binary array of signature validity), msg (the message being signed), A (public keys), public_key_hash (the aggregated public key), R8 and S (components of the signature).
+
+The template calculates the aggregated public key hash using the Pedersen commitment scheme and ensures that it matches the provided public_key_hash.
+
+It also checks the validity of individual signatures depending on the value of valid_signature. If valid_signature is 1, the template checks that the signature is valid. If valid_signature is 0, the template checks that the signature is invalid.
+
+## packMessageToBits Template
+
+This template is responsible for converting the messages into binary representations. It takes as input a serialized message (msg) and converts it into msg_bits using a component called Num2Bits. 
+
+## AggregatedMultisig Template: 
+
+This template is the core of the circuit. It takes a set of parameters and arranges them into an aggregated multi-signature. It's pack message to bits component and verify single multi-signature.
+
+The amount of signature we verify depends on amount_to_prove parameter
+
+## Building
 
 Build circom:
 

@@ -109,3 +109,9 @@ Export verification key
 ```
 snarkjs groth16 setup ../circuits/src/multisig.r1cs pot20_final.ptau multisig.zkey
 ```
+
+Generate solidity verifier
+
+```
+snarkjs zkey export solidityverifier multisig.zkey ../contracts/src/Verifier.sol
+```
